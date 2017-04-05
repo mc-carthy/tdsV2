@@ -32,7 +32,7 @@ public class Enemy : MonoBehaviour {
     private void Update ()
     {
         SeekPlayer ();
-
+        
         if (canSeePlayer)
         {
             transform.Translate ((target.transform.position - transform.position).normalized * speed * Time.deltaTime, Space.World);
@@ -42,8 +42,8 @@ public class Enemy : MonoBehaviour {
         else if (canSeeBreadcrumb)
         {
             transform.Translate ((targetBreadcrumb.transform.position - transform.position).normalized * speed * Time.deltaTime, Space.World);
-            float playerAngle = Utilities.AngleBetweenPoints (transform.position, targetBreadcrumb.transform.position);
-            transform.rotation = Quaternion.Euler (new Vector3 (0, 0, playerAngle + 90));
+            float crumbAngle = Utilities.AngleBetweenPoints (transform.position, targetBreadcrumb.transform.position);
+            transform.rotation = Quaternion.Euler (new Vector3 (0, 0, crumbAngle + 90));
         }
 
         sprRen.color = (canSeePlayer) ? Color.black : origColor;
@@ -83,6 +83,7 @@ public class Enemy : MonoBehaviour {
 
     private void SeekCrumbs ()
     {
+        canSeeBreadcrumb = false;
         foreach (Breadcrumb crumb in AiDirector.activeBreadcrumbs)
         {
             Vector2 vectorToBreadcrumb = crumb.transform.position - transform.position;
@@ -108,13 +109,8 @@ public class Enemy : MonoBehaviour {
                             targetBreadcrumb = crumb;
                         }
                     }
-
-                    return;
                 }
             }
         }
-
-        canSeeBreadcrumb = false;
     }
-
 }
