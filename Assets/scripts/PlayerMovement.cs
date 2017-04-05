@@ -13,7 +13,8 @@ public class PlayerMovement : MonoBehaviour {
 
     public void Move (Vector2 input)
     {
-        collision.Move (input * speed * Time.deltaTime);
+        // collision.Move (input * speed * Time.deltaTime);
+        transform.Translate (input * speed * Time.fixedDeltaTime, Space.World);
     }
 
     public void Rotate (float angle)

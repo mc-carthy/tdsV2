@@ -1,116 +1,54 @@
 ﻿using UnityEngine;
 
-[RequireComponent (typeof (BoxCollider2D))]
+[RequireComponent (typeof (CircleCollider2D))]
 public class PlayerCollision : MonoBehaviour {
 
-    private const float skinWidth = 0.15f;
+    private const float skinWidth = 0.015f;
 
     [SerializeField]
     private LayerMask collisionMask;
 
-    private int horizontalRayCount = 4;
-    private int verticalRayCount = 4;
-    private float horizontalRaySpacing;
-    private float verticalRaySpacing;
+    private int circularRaycasts = 20;
 
-	private BoxCollider2D myCollider;
-    private RaycastOrigins raycastOrigins;
+	private CircleCollider2D myCollider;
 
     private void Awake ()
     {
-        myCollider = GetComponent<BoxCollider2D> ();
-    }
-
-    private void Start ()
-    {
-        CalculateRaySpacing ();
+        myCollider = GetComponent<CircleCollider2D> ();
     }
 
     public void Move (Vector3 velocity)
     {
-        UpdateRaycastOrigins ();
-
-        if (velocity.x != 0)
-        {
-            HorizontalCollisions (ref velocity);
-        }
-        if (velocity.y != 0)
-        {
-            VerticalCollisions (ref velocity);
-        }
+        CircularCollisions (ref velocity);
 
         transform.Translate (velocity, Space.World);
     }
 
-    private void HorizontalCollisions (ref Vector3 velocity)
+    private void CircularCollisions (ref Vector3 velocity)
     {
-        float directionX = Mathf.Sign (velocity.x);
-        float rayLength = Mathf.Abs (velocity.x) + skinWidth;
+        float rayLength = velocity.magnitude + skinWidth;
 
-        for (int i = 0; i < horizontalRayCount; i++)
+        for (int i = 0; i < circularRaycasts; i++)
         {
-            Vector2 rayOrigin = (directionX == -1) ? raycastOrigins.bottomLeft : raycastOrigins.bottomRight;
-            rayOrigin += Vector2.up * (horizontalRaySpacing * i);
-
-            RaycastHit2D hit = Physics2D.Raycast (rayOrigin, Vector2.right * directionX, rayLength, collisionMask);
+            float theta = ((float) i / circularRaycasts) * 2 * Mathf.PI;
+            Vector2 rayVector = new Vector2 (Mathf.Sin (theta), Mathf.Cos (theta)).normalized;
+            Vector2 skinDepth = new Vector2 (Mathf.Sin (theta), Mathf.Cos (theta)).normalized * skinWidth;
+            Vector2 edgePoint = (Vector2) transform.position + (rayVector * myCollider.radius) - skinDepth;
+            RaycastHit2D hit = Physics2D.Raycast (edgePoint, rayVector, rayLength, collisionMask);
 
             if (hit)
             {
-                velocity.x = (hit.distance - skinWidth) * directionX;
+                Debug.Log (hit.distance);
+                if (hit.distance <= skinWidth + 0.01f)
+                {
+                    velocity = -rayVector * skinWidth;
+                }
+                velocity = rayVector * hit.distance - skinDepth;
                 rayLength = hit.distance;
             }
 
-            Debug.DrawRay (rayOrigin, Vector2.right * directionX * rayLength, Color.red);
+            Debug.DrawRay (edgePoint, rayVector * rayLength, Color.red);
+
         }
     }
-
-    private void VerticalCollisions (ref Vector3 velocity)
-    {
-        float directionY = Mathf.Sign (velocity.y);
-        float rayLength = Mathf.Abs (velocity.y) + skinWidth;
-
-        for (int i = 0; i < verticalRayCount; i++)
-        {
-            Vector2 rayOrigin = (directionY == -1) ? raycastOrigins.bottomLeft : raycastOrigins.topLeft;
-            rayOrigin += Vector2.right * (verticalRaySpacing * i + velocity.x);
-
-            RaycastHit2D hit = Physics2D.Raycast (rayOrigin, Vector2.up * directionY, rayLength, collisionMask);
-
-            if (hit)
-            {
-                velocity.y = (hit.distance - skinWidth) * directionY;
-                rayLength = hit.distance;
-            }
-
-            Debug.DrawRay (rayOrigin, Vector2.up * directionY * rayLength, Color.red);
-        }
-    }
-
-    private void UpdateRaycastOrigins ()
-    {
-        Bounds bounds = myCollider.bounds;
-        bounds.Expand (skinWidth * -2);
-
-        raycastOrigins.bottomLeft = new Vector2 (bounds.min.x, bounds.min.y);
-        raycastOrigins.bottomRight = new Vector2 (bounds.max.x, bounds.min.y);
-        raycastOrigins.topLeft = new Vector2 (bounds.min.x, bounds.max.y);
-        raycastOrigins.topRight = new Vector2 (bounds.max.x, bounds.max.y);
-    }
-
-    private void CalculateRaySpacing ()
-    {
-        Bounds bounds = myCollider.bounds;
-        bounds.Expand (skinWidth * -2);
-
-        horizontalRayCount = Mathf.Clamp (horizontalRayCount, 2, int.MaxValue);
-        verticalRayCount = Mathf.Clamp (verticalRayCount, 2, int.MaxValue);
-
-        horizontalRaySpacing = bounds.size.y / (horizontalRayCount - 1);
-        verticalRaySpacing = bounds.size.x / (verticalRayCount - 1);
-    }
-
-    private struct RaycastOrigins {
-        public Vector2 topLeft, topRight, bottomLeft, bottomRight;
-    }
-
 }
