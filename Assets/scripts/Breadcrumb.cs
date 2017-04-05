@@ -3,10 +3,16 @@
 [RequireComponent (typeof (SpriteRenderer))]
 public class Breadcrumb : MonoBehaviour {
 
+    private float remainingLifetime;
+    public float RemainingLifetime {
+        get {
+            return remainingLifetime;
+        }
+    }
+    
     private SpriteRenderer sprRen;
     private Color startCol;
 	private float lifetime = 5f;
-    private float remainingLifetime;
 
     private void Awake ()
     {
@@ -27,6 +33,7 @@ public class Breadcrumb : MonoBehaviour {
 
         if (remainingLifetime <= 0)
         {
+            AiDirector.activeBreadcrumbs.Remove (this);
             Destroy (gameObject);
         }
     }

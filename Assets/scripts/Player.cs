@@ -22,7 +22,7 @@ public class Player : MonoBehaviour {
     private PlayerInput input;
 
     private Vector2 lastBreadcrumbPosition;
-    private float breadcrumbDistance = 5f;
+    private float breadcrumbDistance = 2f;
 
     private void Awake ()
     {
@@ -47,6 +47,7 @@ public class Player : MonoBehaviour {
     private void DropBreadcrumb ()
     {
         Breadcrumb newBreadcrumb = Instantiate (breadcrumbPrefab, transform.position, Quaternion.identity) as Breadcrumb;
+        AiDirector.activeBreadcrumbs.Add (newBreadcrumb);
     }
 
 }

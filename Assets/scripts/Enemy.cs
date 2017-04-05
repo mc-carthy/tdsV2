@@ -6,9 +6,11 @@ public class Enemy : MonoBehaviour {
     private LayerMask playerMask;
 
 	private Player target;
+    private Breadcrumb targetBreadcrumb;
     private SpriteRenderer sprRen;
     private Color origColor;
     private bool canSeePlayer;
+    private bool canSeeBreadcrumb;
     private float sightAngle = 120f;
     private float maxSightDistance = 10f;
     private float minSightDistance = 2f;
@@ -35,6 +37,12 @@ public class Enemy : MonoBehaviour {
         {
             transform.Translate ((target.transform.position - transform.position).normalized * speed * Time.deltaTime, Space.World);
             float playerAngle = Utilities.AngleBetweenPoints (transform.position, target.transform.position);
+            transform.rotation = Quaternion.Euler (new Vector3 (0, 0, playerAngle + 90));
+        }
+        else if (canSeeBreadcrumb)
+        {
+            transform.Translate ((targetBreadcrumb.transform.position - transform.position).normalized * speed * Time.deltaTime, Space.World);
+            float playerAngle = Utilities.AngleBetweenPoints (transform.position, targetBreadcrumb.transform.position);
             transform.rotation = Quaternion.Euler (new Vector3 (0, 0, playerAngle + 90));
         }
 
@@ -69,6 +77,44 @@ public class Enemy : MonoBehaviour {
 
         canSeePlayer = false;
 
+        SeekCrumbs ();
+
+    }
+
+    private void SeekCrumbs ()
+    {
+        foreach (Breadcrumb crumb in AiDirector.activeBreadcrumbs)
+        {
+            Vector2 vectorToBreadcrumb = crumb.transform.position - transform.position;
+            float crumbDist = Mathf.Min (vectorToBreadcrumb.magnitude, sightDistance);
+
+            // The minus 1 is to take account of the fact that we're starting a unit away from the enemy's position
+            RaycastHit2D hit = Physics2D.Raycast ((Vector2) transform.position + vectorToBreadcrumb.normalized, vectorToBreadcrumb, crumbDist - 1f);
+            Debug.DrawRay ((Vector2) transform.position + vectorToBreadcrumb.normalized, crumb.transform.position - transform.position, Color.red);
+
+            if (hit)
+            {
+                if (hit.collider.tag == "crumb" && Vector2.Angle (transform.up, vectorToBreadcrumb) < sightAngle)
+                {
+                    canSeeBreadcrumb = true;
+                    if (targetBreadcrumb == null)
+                    {
+                        targetBreadcrumb = crumb;
+                    }
+                    else
+                    {
+                        if (crumb.RemainingLifetime > targetBreadcrumb.RemainingLifetime)
+                        {
+                            targetBreadcrumb = crumb;
+                        }
+                    }
+
+                    return;
+                }
+            }
+        }
+
+        canSeeBreadcrumb = false;
     }
 
 }
