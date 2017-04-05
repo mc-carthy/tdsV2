@@ -4,7 +4,7 @@ public class CameraController : MonoBehaviour {
 
 	private Player target;
     private Bounds targetBounds;
-    private Vector2 focusAreaSize = new Vector2 (4f, 3f);
+    private Vector2 focusAreaSize = new Vector2 (3f, 2f);
     private FocusArea focusArea;
     private float lookAheadDistX = 4f;
     private float lookAheadDistY = 3f;
