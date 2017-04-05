@@ -2,12 +2,18 @@
 
 public class PlayerInput : MonoBehaviour {
 
+	private Vector2 myInput;
+    public Vector2 MyInput {
+        get {
+            return myInput;
+        }
+    }
+    
     [SerializeField]
     private bool isUsingRawInput;
 
     private PlayerMovement movement;
 
-	private Vector2 input;
     private Vector2 mousePos;
     private float minCursorDistance;
 
@@ -24,7 +30,7 @@ public class PlayerInput : MonoBehaviour {
 
     private void FixedUpdate ()
     {
-        movement.Move (input);
+        movement.Move (myInput);
     }
 
     private void GetTranslationInput ()
@@ -41,7 +47,7 @@ public class PlayerInput : MonoBehaviour {
             v = Input.GetAxis ("Vertical");
         }
 
-        input = new Vector2 (h, v);
+        myInput = new Vector2 (h, v);
     }
 
     private void GetMousePosition ()
