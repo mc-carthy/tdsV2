@@ -9,6 +9,7 @@ public class Enemy : MonoBehaviour {
     private SpriteRenderer sprRen;
     private Color origColor;
     private bool canSeePlayer;
+    private float sightAngle = 120f;
 
     private void Awake ()
     {
@@ -35,7 +36,7 @@ public class Enemy : MonoBehaviour {
 
         if (hit)
         {
-            if (hit.collider.tag == "Player")
+            if (hit.collider.tag == "Player" && Vector2.Angle (transform.up, vectorToPlayer) < sightAngle / 2f)
             {
                 canSeePlayer = true;
                 return;
