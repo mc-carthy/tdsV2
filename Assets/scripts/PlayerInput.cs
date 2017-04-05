@@ -8,7 +8,7 @@ public class PlayerInput : MonoBehaviour {
             return myInput;
         }
     }
-    
+
     [SerializeField]
     private bool isUsingRawInput;
 
@@ -47,7 +47,7 @@ public class PlayerInput : MonoBehaviour {
             v = Input.GetAxis ("Vertical");
         }
 
-        myInput = new Vector2 (h, v);
+        myInput = new Vector2 (h, v).normalized;
     }
 
     private void GetMousePosition ()
