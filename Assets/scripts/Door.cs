@@ -22,6 +22,7 @@ public class Door : MonoBehaviour {
     private void Start ()
     {
         origColour = sprRen.color;
+        gameObject.layer = 10; // TODO - Get rid of hardcoded values
     }
 
     private void OnMouseDown ()

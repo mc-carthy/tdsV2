@@ -16,6 +16,7 @@ public class Enemy : MonoBehaviour {
     private float minSightDistance = 2f;
     private float sightDistance;
     private float speed = 3f;
+    private int doorsLayerMask = 1 << 10; // TODO - Get rid of hardcoded values
 
     private void Awake ()
     {
@@ -82,13 +83,14 @@ public class Enemy : MonoBehaviour {
     private void SeekCrumbs ()
     {
         canSeeBreadcrumb = false;
+        int ignoreDoors = ~doorsLayerMask;
         foreach (Breadcrumb crumb in AiDirector.activeBreadcrumbs)
         {
             Vector2 vectorToBreadcrumb = crumb.transform.position - transform.position;
             float crumbDist = Mathf.Min (vectorToBreadcrumb.magnitude, sightDistance);
 
             // The minus 1 is to take account of the fact that we're starting a unit away from the enemy's position
-            RaycastHit2D hit = Physics2D.Raycast ((Vector2) transform.position + vectorToBreadcrumb.normalized, vectorToBreadcrumb, crumbDist - 1f);
+            RaycastHit2D hit = Physics2D.Raycast ((Vector2) transform.position + vectorToBreadcrumb.normalized, vectorToBreadcrumb, crumbDist - 1f, ignoreDoors);
             Debug.DrawRay ((Vector2) transform.position + vectorToBreadcrumb.normalized, crumb.transform.position - transform.position, Color.red);
 
             if (hit)
