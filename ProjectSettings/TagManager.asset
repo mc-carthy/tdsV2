@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - crumb
+  - enemy
   layers:
   - Default
   - TransparentFX

@@ -45,7 +45,7 @@ public class Enemy : MonoBehaviour {
 
         ObstacleAvoidance ();
 
-        sprRen.color = (canSeePlayer) ? Color.black : origColor;
+        // sprRen.color = (canSeePlayer) ? Color.black : origColor;
     }
 
     private void SetSightPercentage (float percentage)

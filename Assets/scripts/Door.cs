@@ -25,6 +25,14 @@ public class Door : MonoBehaviour {
         gameObject.layer = 10; // TODO - Get rid of hardcoded values
     }
 
+    private void OnCollisionEnter2D (Collision2D other)
+    {
+        if (other.gameObject.tag == "enemy")
+        {
+            Open ();
+        }
+    }
+
     private void OnMouseDown ()
     {
         if (Vector2.Distance (transform.position, player.transform.position) < playerDistToOpen)
@@ -38,6 +46,13 @@ public class Door : MonoBehaviour {
         isOpen = !isOpen;
         sprRen.color = isOpen ? alternateColor : origColour;
         col.isTrigger = isOpen;
+    }
+
+    private void Open ()
+    {
+        isOpen = true;
+        sprRen.color = alternateColor;
+        col.isTrigger = true;
     }
 
 }
