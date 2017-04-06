@@ -35,16 +35,14 @@ public class Enemy : MonoBehaviour {
         
         if (canSeePlayer)
         {
-            transform.Translate ((target.transform.position - transform.position).normalized * speed * Time.deltaTime, Space.World);
-            float playerAngle = Utilities.AngleBetweenPoints (transform.position, target.transform.position);
-            transform.rotation = Quaternion.Euler (new Vector3 (0, 0, playerAngle + 90));
+            SeekTarget (target.transform);
         }
         else if (canSeeBreadcrumb)
         {
-            transform.Translate ((targetBreadcrumb.transform.position - transform.position).normalized * speed * Time.deltaTime, Space.World);
-            float crumbAngle = Utilities.AngleBetweenPoints (transform.position, targetBreadcrumb.transform.position);
-            transform.rotation = Quaternion.Euler (new Vector3 (0, 0, crumbAngle + 90));
+            SeekTarget (targetBreadcrumb.transform);
         }
+
+        ObstacleAvoidance ();
 
         sprRen.color = (canSeePlayer) ? Color.black : origColor;
     }
@@ -112,5 +110,17 @@ public class Enemy : MonoBehaviour {
                 }
             }
         }
+    }
+
+    private void SeekTarget (Transform targetTransform)
+    {
+        transform.Translate ((targetTransform.transform.position - transform.position).normalized * speed * Time.deltaTime, Space.World);
+        float targetAngle = Utilities.AngleBetweenPoints (transform.position, targetTransform.transform.position);
+        transform.rotation = Quaternion.Euler (new Vector3 (0, 0, targetAngle + 90));
+    }
+
+    private void ObstacleAvoidance ()
+    {
+        
     }
 }
